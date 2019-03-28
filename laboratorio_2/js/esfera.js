@@ -127,7 +127,7 @@ geo.uvsNeedUpdate = true;
 
 // ADICIONAR TEXTURA NO SÒLIDO
 var textureLoader = new THREE.TextureLoader();
-var tex = textureLoader.load( "texture/earth.png" );
+var tex = textureLoader.load( "texture/earth.jpg" );
 var material = new THREE.MeshPhongMaterial({
     vertexColors: THREE.VertexColors,
     flatShading: true,
