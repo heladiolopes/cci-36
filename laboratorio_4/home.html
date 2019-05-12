@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <title>LABORATÓRIO 4</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            margin: 0px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+<script src="js/three.js"></script>
+<script src="js/OrbitControls.js"></script>
+
+<script id="vertexShader" type="x-shader/x-vertex">
+        uniform float time;
+        uniform vec2 resolution;
+		varying float intensity;
+		varying vec2 textureCoords;
+        void main()	{
+            gl_Position = projectionMatrix * modelViewMatrix *vec4( position, 1.0 );
+			intensity = 1.0;
+			textureCoords=uv.xy;
+        }
+
+</script>
+
+
+<script id="fragmentShader" type="x-shader/x-fragment">
+        uniform float time;
+        uniform vec2 resolution;
+		varying float intensity;
+		varying vec2 textureCoords;
+        uniform sampler2D mtexture;
+        uniform sampler2D ntexture;
+
+        void mainImage( out vec4 fragColor, in vec2 fragCoord )
+        {
+
+            vec2 xy = fragCoord.xy;
+
+            vec4 tx1 = texture2D(mtexture, xy);
+            vec4 tx0 = texture2D(ntexture, xy);
+
+            float ajust = 0.003;
+
+            float x = xy.x + ajust*time - floor(xy.x + ajust*time);
+
+            vec4 txt = vec4(abs(x-0.5)*tx0.r + (0.5-abs(x-0.5))*tx1.r,
+                            abs(x-0.5)*tx0.g + (0.5-abs(x-0.5))*tx1.g,
+                            abs(x-0.5)*tx0.b + (0.5-abs(x-0.5))*tx1.b,
+                            1.0);
+
+            fragColor = txt;
+        }
+
+        void main()	{
+            vec4 myFragColor;
+            mainImage(myFragColor, textureCoords);
+            gl_FragColor = myFragColor;
+        }
+
+
+</script>
+
+<script src="js/planeta.js"></script>
+
+</body>
+
+</html>
