@@ -361,3 +361,42 @@ function banco(x = 0.5*M, y = 2*M, h = 0.10*M){
 
     return banco;
 }
+
+//////////////////////////////////////////////
+function hidrante(r1 = 0.15*M, r2 = 0.15*M, h = 0.75*M){
+    // Cilindro Principal
+    var geometry = new THREE.CylinderGeometry( r1, r2, h, 32 );
+    var material = new THREE.MeshBasicMaterial( {color: 0xB22222} );
+    var cylinder = new THREE.Mesh( geometry, material );
+    cylinder.rotation.x = Math.PI/2;
+
+    cylinder.position.x = -10*M;
+    cylinder.position.y = -10*M;
+    cylinder.position.z = h/2;
+
+    // Chapéu
+    var geometry_1 = new THREE.SphereGeometry( r1, 32, 32);
+    var material_1 = new THREE.MeshBasicMaterial( {color: 0xB22222} );
+    var top_1 = new THREE.Mesh( geometry_1, material_1 );
+
+    top_1.position.x = cylinder.position.x;
+    top_1.position.y = cylinder.position.y;
+    top_1.position.z = h;
+
+    // Cilindro Lateral
+    var geometry_2 = new THREE.CylinderGeometry( 4*r1/3, 4*r1/3, 4*r1/3, 32 );
+    var material_2 = new THREE.MeshBasicMaterial( {color: 0xA52A2A} );
+    var hat = new THREE.Mesh( geometry_2, material_2 );
+    hat.rotation.x = Math.PI/2;
+
+    hat.position.x = cylinder.position.x;
+    hat.position.y = cylinder.position.y;
+    hat.position.z = 3*h/4;
+
+    var hidrante = new THREE.Group();
+    hidrante.add(cylinder);
+    hidrante.add(top_1);
+    hidrante.add(hat);
+
+    return hidrante
+}
