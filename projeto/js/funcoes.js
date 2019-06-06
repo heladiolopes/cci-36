@@ -320,6 +320,43 @@ function nuvem(){
     return sp_group;
 }
 
-function hidrante(){
+function banco(x = 0.5*M, y = 2*M, h = 0.10*M){
+    // Parte Principal
+    var main_geo = new THREE.BoxGeometry(x, y, h);
+    var main_mat = new THREE.MeshLambertMaterial({color:0x3A5C39, side:THREE.DoubleSide});
+    var main =  new THREE.Mesh(main_geo, main_mat);
+    main.position.x = 10*M;
+    main.position.y = 10*M;
+    main.position.z = 0.5*M;
 
+    // Pernas
+    var perna_geo = new THREE.BoxGeometry(0.1*M, 0.1*M, main.position.z);
+    var perna_mat = new THREE.MeshLambertMaterial({color:0x3A5C39, side:THREE.DoubleSide});
+    var perna =  new THREE.Mesh(perna_geo, perna_mat);
+    perna.position.z = main.position.z/2;
+
+    perna_1 = perna.clone();
+    perna_1.position.x = main.position.x + x/2 - 0.05*M;
+    perna_1.position.y = main.position.y + y/2 - 0.05*M;
+
+    perna_2 = perna.clone();
+    perna_2.position.x = main.position.x + x/2 - 0.05*M;
+    perna_2.position.y = main.position.y - y/2 + 0.05*M;
+
+    perna_3 = perna.clone();
+    perna_3.position.x = main.position.x - x/2 + 0.05*M;
+    perna_3.position.y = main.position.y + y/2 - 0.05*M;
+
+    perna_4 = perna.clone();
+    perna_4.position.x = main.position.x - x/2 + 0.05*M;
+    perna_4.position.y = main.position.y - y/2 + 0.05*M;
+
+    var banco = new THREE.Group();
+    banco.add(main)
+    banco.add(perna_1)
+    banco.add(perna_2)
+    banco.add(perna_3)
+    banco.add(perna_4)
+
+    return banco;
 }
