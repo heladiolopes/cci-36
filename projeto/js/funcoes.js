@@ -274,34 +274,40 @@ function predio3(x = 4*M, y = 4*M, h = 5*M) {
     return predio;
 }
 
+//////////////////////////////////////////////
 function nuvem(){
     var sp_group = new THREE.Group();
 
-    var geometry1 = new THREE.OctahedronGeometry( 3*M, 1 );
+    r = 3*M;
+    x = 20*M;
+    y = 20*M;
+    z = 30*M;
+
+    var geometry1 = new THREE.OctahedronGeometry( r, 1 );
     var material1 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
     var sphere1 = new THREE.Mesh( geometry1, material1 );
-    sphere1.position.set(20*M, 20*M, 30*M);
-    var geometry2 = new THREE.OctahedronGeometry( 3*M, 1 );
+    sphere1.position.set(x, y, z);
+    var geometry2 = new THREE.OctahedronGeometry( r, 1 );
     var material2 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
     var sphere2 = new THREE.Mesh( geometry2, material2 );
-    sphere2.position.set(18*M, 22*M, 32*M);
-    var geometry3 = new THREE.OctahedronGeometry( 4*M, 1 );
+    sphere2.position.set(x - 2*M, y + 2*M, z + 2*M);
+    var geometry3 = new THREE.OctahedronGeometry( 4*r/3, 1 );
     var material3 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
     var sphere3 = new THREE.Mesh( geometry3, material3 );
-    sphere3.position.set(21*M, 19*M, 29*M);
+    sphere3.position.set(x + M, y - M, z - M);
 
-    var geometry4 = new THREE.OctahedronGeometry( 2*M, 1 );
+    var geometry4 = new THREE.OctahedronGeometry( 2*r/3, 1 );
     var material4 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
     var sphere4 = new THREE.Mesh( geometry4, material4 );
-    sphere4.position.set(22*M, 22*M, 28*M);
-    var geometry5 = new THREE.OctahedronGeometry( 5*M, 1 );
+    sphere4.position.set(x + 2*M, y + 2*M, z - 2*M);
+    var geometry5 = new THREE.OctahedronGeometry( 5*r/3, 1 );
     var material5 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
     var sphere5 = new THREE.Mesh( geometry5, material5 );
-    sphere5.position.set(24*M, 24*M, 30*M);
-    var geometry6 = new THREE.OctahedronGeometry( 3*M, 1 );
+    sphere5.position.set(x + 4*M, y + 4*M, z);
+    var geometry6 = new THREE.OctahedronGeometry( r, 1 );
     var material6 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
     var sphere6 = new THREE.Mesh( geometry6, material6 );
-    sphere6.position.set(23*M, 21*M, 27*M);
+    sphere6.position.set(x + 3*M, y + M, z - 3*M);
 
     sp_group.add(sphere1);
     sp_group.add(sphere2);
@@ -312,4 +318,8 @@ function nuvem(){
     sp_group.add(sphere6);
 
     return sp_group;
+}
+
+function hidrante(){
+
 }
