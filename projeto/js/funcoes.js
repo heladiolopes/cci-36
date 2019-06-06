@@ -137,12 +137,12 @@ function predio2(x = 6*M, y = 9*M, h = 15*M) {
 
     for (var i = 0; i < 3; i++){
         out_aux1 = out2.clone()
-        out_aux1.position.y = out_aux1.position.y - main.position.y/3;
+        out_aux1.position.y = out_aux1.position.y - y/3;
         out_aux1.position.z = out_aux1.position.z - i*0.2*h;
         out2_group.add(out_aux1);
 
         out_aux2 = out2.clone()
-        out_aux2.position.y = out_aux2.position.y + main.position.y/3;
+        out_aux2.position.y = out_aux2.position.y + y/3;
         out_aux2.position.z = out_aux2.position.z - i*0.2*h;
         out2_group.add(out_aux2)
     }
@@ -167,12 +167,12 @@ function predio2(x = 6*M, y = 9*M, h = 15*M) {
 
     for (var i = 0; i < 3; i++){
         w_aux1 = w.clone()
-        w_aux1.position.y = w_aux1.position.y - main.position.y/6;
+        w_aux1.position.y = w_aux1.position.y - y/6;
         w_aux1.position.z = w_aux1.position.z - i*0.2*h;
         w_group.add(w_aux1);
 
         w_aux2 = w.clone()
-        w_aux2.position.y = w_aux2.position.y + main.position.y/6;
+        w_aux2.position.y = w_aux2.position.y + y/6;
         w_aux2.position.z = w_aux2.position.z - i*0.2*h;
         w_group.add(w_aux2)
     }
@@ -272,4 +272,44 @@ function predio3(x = 4*M, y = 4*M, h = 5*M) {
     predio.add(w2);
 
     return predio;
+}
+
+function nuvem(){
+    var sp_group = new THREE.Group();
+
+    var geometry1 = new THREE.OctahedronGeometry( 3*M, 1 );
+    var material1 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
+    var sphere1 = new THREE.Mesh( geometry1, material1 );
+    sphere1.position.set(20*M, 20*M, 30*M);
+    var geometry2 = new THREE.OctahedronGeometry( 3*M, 1 );
+    var material2 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
+    var sphere2 = new THREE.Mesh( geometry2, material2 );
+    sphere2.position.set(18*M, 22*M, 32*M);
+    var geometry3 = new THREE.OctahedronGeometry( 4*M, 1 );
+    var material3 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
+    var sphere3 = new THREE.Mesh( geometry3, material3 );
+    sphere3.position.set(21*M, 19*M, 29*M);
+
+    var geometry4 = new THREE.OctahedronGeometry( 2*M, 1 );
+    var material4 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
+    var sphere4 = new THREE.Mesh( geometry4, material4 );
+    sphere4.position.set(22*M, 22*M, 28*M);
+    var geometry5 = new THREE.OctahedronGeometry( 5*M, 1 );
+    var material5 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
+    var sphere5 = new THREE.Mesh( geometry5, material5 );
+    sphere5.position.set(24*M, 24*M, 30*M);
+    var geometry6 = new THREE.OctahedronGeometry( 3*M, 1 );
+    var material6 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
+    var sphere6 = new THREE.Mesh( geometry6, material6 );
+    sphere6.position.set(23*M, 21*M, 27*M);
+
+    sp_group.add(sphere1);
+    sp_group.add(sphere2);
+    sp_group.add(sphere3);
+
+    sp_group.add(sphere4);
+    sp_group.add(sphere5);
+    sp_group.add(sphere6);
+
+    return sp_group;
 }
