@@ -1,468 +1,257 @@
 
-function makeHouse(col=0xf8f8f8, wall=0xf8aaf8, larg = 10*M, alt = 14*M, exp = 0.1*M) {
-    // Piso
-    var piso_geo = new THREE.BoxGeometry(larg, alt, 0.2*M);
-    var piso_mat = new THREE.MeshLambertMaterial({color:col, side:THREE.DoubleSide});
-    var piso = new THREE.Mesh(piso_geo, piso_mat);
-    piso.position.z = - 1.5*M;
+const cores = [0x6DAC73, 0x708AAD, 0x90B884, 0x800000, 0x4682B4, 0x8B4513, 0xDAA520, 0xDCDCDC];
 
-    // Parede
-    var parede_mat = new THREE.MeshLambertMaterial({color:wall, side:THREE.DoubleSide});
-
-    var lateral_geo =new THREE.BoxGeometry(exp, alt, 3*M);
-    var lateral = new THREE.Mesh(lateral_geo, parede_mat);
-    var l = lateral.clone();
-    lateral.position.x = - (larg-exp)/2;
-    l.position.x = (larg-exp)/2;
-
-    var hor_geo = new THREE.BoxGeometry(larg, exp, 3*M);
-    var horizontal = new THREE.Mesh(hor_geo, parede_mat);
-    var h = horizontal.clone();
-    horizontal.position.y = - (alt-exp)/2;
-    h.position.y = (alt-exp)/2;
-
-    // Agrupar
-    var g_plane = new THREE.Group();
-    g_plane.add(piso);
-    g_plane.add(lateral);
-    g_plane.add(horizontal);
-    g_plane.add(l);
-    g_plane.add(h);
-    g_plane.position.z =  1.5*M;
-    g_plane.position.y = - 2*M;
-
-    return g_plane;
+function rand(range){
+    return Math.abs(Math.floor(Math.random() * 100) % range);
 }
 
-function predio1(x = 5*M, y = 7*M, h = 10*M) {
-    // Geometria Principal
-    var main_geo = new THREE.BoxGeometry(x, y, 2*h/3);
-    var main_mat = new THREE.MeshLambertMaterial({color:0xC2BFB0, side:THREE.DoubleSide});
-    var main =  new THREE.Mesh(main_geo, main_mat);
-    main.position.z = 2*h/3;
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+}
 
-    var main_geo1 = new THREE.BoxGeometry(x, y, h/3);
-    var main_mat1 = new THREE.MeshLambertMaterial({color:0x6DAC73, side:THREE.DoubleSide});
-    var main1 =  new THREE.Mesh(main_geo1, main_mat1);
-    main1.position.z = h/6;
+function cidade(x = 50*M, y = 50*M){
+    var plane_geom = new THREE.PlaneGeometry(sz*30*M + 25*M, sz*30*M + 25*M, 32);
+    var plane_mat = new THREE.MeshLambertMaterial({color:0x2C2C2C, side:THREE.DoubleSide});
+    var plane = new THREE.Mesh(plane_geom, plane_mat);
+    plane.position.z = -0.3*M;
 
-    // Janelas
-    var window_geo = new THREE.PlaneGeometry(1.25*M, 1.75*M, 32);
-    var window_mat = new THREE.MeshLambertMaterial({color:0x51515A, side:THREE.DoubleSide});
-    var window = new THREE.Mesh(window_geo, window_mat);
-    window.rotation.y = Math.PI/2;
-    pos = [[2.51*M, -2.25*M], [2.51*M, 2.25*M]];
-    pos_z = [5.5*M, 8.5*M];
-    var w_group = new THREE.Group();
-    for (var i = 0; i < pos_z.length; i++){
-        for (var k = 0; k < pos.length; k++){
-            w = window.clone();
-            w.position.set(pos[k][0], pos[k][1], pos_z[i]);
-            w_group.add(w);
+    var bloco_geo = new THREE.BoxGeometry(10.1*M, 10.1*M, 0.3*M);
+    var bloco_mat = new THREE.MeshLambertMaterial({color:0xFFFFFF, side:THREE.DoubleSide});
+    var bloco = new THREE.Mesh(bloco_geo, bloco_mat);
+
+    var b_group = new THREE.Group();
+    for (var i = -sz; i < sz+1; i++){
+        for (var k = -sz; k < sz+1; k++) {
+            b = quarteirao();
+            b.position.set(i*15*M, k*15*M, 0.01*M);
+            b_group.add(b);
+
+            a = bloco.clone()
+            a.position.set(i*15*M, k*15*M, -0.15*M);
+            b_group.add(a);
         }
     }
 
-    // Porta
-    var door_geo = new THREE.PlaneGeometry(2.5*M, 1.75*M, 32);
-    var door_mat = new THREE.MeshLambertMaterial({color:0xB5B4CB, side:THREE.DoubleSide});
-    var door = new THREE.Mesh(door_geo, door_mat);
-    door.rotation.y = Math.PI/2;
-    door.position.set(x/2+x/10+0.05*M, 0, 1.25*M);
+    var city = new THREE.Group();
+    city.add(plane);
+    city.add(b_group);
 
-    // Detalhes
-    var detail_geo = new THREE.BoxGeometry(x/10, y/3, h);
-    var detail = new THREE.Mesh(detail_geo, main_mat1);
-    detail.position.set(x/2+x/20, 0, h/2);
+    city.rotation.x = -Math.PI/2;
 
-    // Janelas do meio
-    var wind_geo = new THREE.PlaneGeometry(0.75*M, 1.25*M, 32);
-    var wind = new THREE.Mesh(wind_geo, window_mat);
-    wind.rotation.y = Math.PI/2;
-    for (var i = 0; i < pos_z.length; i++){
-        w = wind.clone();
-        w.position.set(x/2+x/10+0.05*M, 0, pos_z[i]);
-        w_group.add(w);
+    return city;
+}
+
+function quarteirao(){
+
+    var q;
+    tipo = rand(5);
+    rotacao = rand(4);
+
+    switch(tipo) {
+        case 0: q = q0();break;
+        case 1: q = q1();break;
+        case 2: q = q2();break;
+        case 3: q = q3();break;
+        case 4: q = q4();break;
+    }
+
+    q.rotation.z = rotacao*Math.PI/2;
+    return q;
+}
+
+// Predio 1
+function q0(){
+    var q_group = new THREE.Group();
+
+    var bloco = new THREE.Mesh(
+        new THREE.PlaneGeometry(10*M, 10*M, 32),
+        new THREE.MeshLambertMaterial({color:0x708090, side:THREE.DoubleSide})
+    );
+    bloco.position.z = 0.02*M;
+    q_group.add(bloco);
+
+    var p = predio1(color=cores[rand(cores.length)]);
+    p.position.x = -M;
+    q_group.add(p);
+
+    var a = arvore();
+    a.position.x = 3*M;
+    b = a.clone()
+    a.position.y = 2.5*M;
+    b.position.y = -2.5*M;
+    q_group.add(a);
+    q_group.add(b);
+
+    return q_group;
+}
+
+// Fabrica
+function q1(){
+    var q_group = new THREE.Group();
+
+    var p = fabrica(color=cores[rand(cores.length)]);
+    p.position.x = -1.5*M;
+    q_group.add(p);
+
+    var bloco = new THREE.Mesh(
+        new THREE.PlaneGeometry(10*M, 10*M, 32),
+        new THREE.MeshLambertMaterial({color:0x606166, side:THREE.DoubleSide})
+    );
+    bloco.position.z = 0.02*M;
+    q_group.add(bloco);
+
+    if (rand(10) < 7){
+        h = hidrante();
+        h.position.set(4*M, -4*M, 0);
+        q_group.add(h);
+    }
+
+    if (rand(10) < 7){
+        c = carro(color = cores[rand(cores.length)]);
+        c.position.set(3*M, 3*M, 0);
+        c.rotation.z = Math.PI/2;
+        q_group.add(c);
+    }
+
+    return q_group;
+}
+
+// Parque
+function q2(){
+    var q_group = new THREE.Group();
+
+    var bloco = new THREE.Mesh(
+        new THREE.PlaneGeometry(10*M, 10*M, 32),
+        new THREE.MeshLambertMaterial({color:0x556B2F, side:THREE.DoubleSide})
+    );
+    bloco.position.z = 0.02*M;
+    q_group.add(bloco);
+
+    var arv = arvore();
+    for (var k = -1; k < 2; k++){
+        a = arv.clone();
+        a.position.set(3*M, 3*k*M, 0);
+        b = arv.clone();
+        b.position.set(-3*M, 3*k*M, 0);
+        ba = banco();
+        ba.position.set(0, 3*k*M, 0);
+
+        q_group.add(a);
+        q_group.add(b);
+        q_group.add(ba);
+    }
+
+    return q_group;
+}
+
+// Predio 2
+function q3(){
+    var q_group = new THREE.Group();
+
+    var bloco = new THREE.Mesh(
+        new THREE.PlaneGeometry(10*M, 10*M, 32),
+        new THREE.MeshLambertMaterial({color:0xE6E6FA, side:THREE.DoubleSide})
+    );
+    bloco.position.z = 0.02*M;
+    q_group.add(bloco);
+
+    var p = predio2(color=cores[rand(cores.length)]);
+    p.position.x = -0.5*M;
+    q_group.add(p);
+
+    if (rand(10) < 4){
+        h = hidrante();
+        h.position.set(4*M, 4*M, 0);
+        q_group.add(h);0
+    }
+
+    return q_group;
+}
+
+// Predio 3
+function q4(){
+    var q_group = new THREE.Group();
+
+    var bloco = new THREE.Mesh(
+        new THREE.PlaneGeometry(10*M, 10*M, 32),
+        new THREE.MeshLambertMaterial({color:0x606166, side:THREE.DoubleSide})
+    );
+    bloco.position.z = 0.02*M;
+    q_group.add(bloco);
+
+    var p = predio3(color=cores[rand(cores.length)]);
+    p.position.x = -2*M;
+    q_group.add(p);
+
+    if (rand(10) < 7){
+        h = hidrante();
+        h.position.set(4*M, 4*M, 0);
+        q_group.add(h);0
+    }
+
+    if (rand(10) < 5){
+        c = carro(color = cores[rand(cores.length)]);
+        c.position.set(3*M, -3*M, 0);
+        c.rotation.z = Math.PI/2;
+        q_group.add(c);
+        if (rand(10) < 8){
+            c = carro(color = cores[rand(cores.length)]);
+            c.position.set(3*M, -1*M, 0);
+            c.rotation.z = Math.PI/2;
+            q_group.add(c);
+        }
     }
 
 
 
-    // Agrupar
-    var predio = new THREE.Group();
-    predio.add(main);
-    predio.add(main1);
-    predio.add(door);
-    predio.add(w_group);
-    predio.add(detail);
 
-    return predio;
-
+    return q_group;
 }
 
-//////////////////////////////////////////////
-function predio2(x = 6*M, y = 9*M, h = 15*M) {
-    // Geometria Principal (Predio)
-    var main_geo = new THREE.BoxGeometry(x, y, h);
-    var main_mat = new THREE.MeshLambertMaterial({color:0x90B884, side:THREE.DoubleSide});
-    var main =  new THREE.Mesh(main_geo, main_mat);
-    main.position.x = x;
-    main.position.y = y;
-    main.position.z = h/2;
-
-    // Parte "para fora" 1
-    var out1_group = new THREE.Group();
-    var out_geo1 = new THREE.BoxGeometry(5*x/12, 13*y/18, 0.05*h);
-    var out_mat1 = new THREE.MeshLambertMaterial({color:0x354E3A, side:THREE.DoubleSide});
-    var out1 =  new THREE.Mesh(out_geo1, out_mat1);
-    out1.position.x = main.position.x + x/2;
-    out1.position.y = main.position.y;
-    out1.position.z = 0.9*h;
-
-    for (var i = 0; i < 3; i++){
-        out_aux1 = out1.clone()
-        out_aux1.position.z = out_aux1.position.z - i*0.2*h;
-        out1_group.add(out_aux1);
-        out_aux2 = out1.clone()
-        out_aux2.position.z = out_aux2.position.z - i*0.2*h - 2*h/15;
-        out1_group.add(out_aux2);
+// Keys do teclado
+var onKeyDown = function ( event ) {
+    switch ( event.keyCode ) {
+        case 38: // up
+        case 87: // w
+            moveForward = true;
+            break;
+        case 37: // left
+        case 65: // a
+            moveLeft = true;
+            break;
+        case 40: // down
+        case 83: // s
+            moveBackward = true;
+            break;
+        case 39: // right
+        case 68: // d
+            moveRight = true;
+            break;
+        case 32: // space
+            if ( canJump === true ) velocity.y += 350;
+            canJump = false;
+            break;
     }
-
-    // Parte "para fora" 2
-    var out2_group = new THREE.Group();
-    var out_geo2 = new THREE.BoxGeometry(5*x/12, y/18, 2*h/15);
-    var out_mat2 = new THREE.MeshLambertMaterial({color:0x354E3A, side:THREE.DoubleSide});
-    var out2 =  new THREE.Mesh(out_geo2, out_mat2);
-    out2.position.x = main.position.x + x/2;
-    out2.position.y = main.position.y;
-    out2.position.z = 5*h/6;
-
-    for (var i = 0; i < 3; i++){
-        out_aux1 = out2.clone()
-        out_aux1.position.y = out_aux1.position.y - y/3;
-        out_aux1.position.z = out_aux1.position.z - i*0.2*h;
-        out2_group.add(out_aux1);
-
-        out_aux2 = out2.clone()
-        out_aux2.position.y = out_aux2.position.y + y/3;
-        out_aux2.position.z = out_aux2.position.z - i*0.2*h;
-        out2_group.add(out_aux2)
+};
+var onKeyUp = function ( event ) {
+    switch ( event.keyCode ) {
+        case 38: // up
+        case 87: // w
+            moveForward = false;
+            break;
+        case 37: // left
+        case 65: // a
+            moveLeft = false;
+            break;
+        case 40: // down
+        case 83: // s
+            moveBackward = false;
+            break;
+        case 39: // right
+        case 68: // d
+            moveRight = false;
+            break;
     }
-
-    // Porta
-    var door_geo2 = new THREE.PlaneGeometry(4*M, 3*M, 32);
-    var door_mat2 = new THREE.MeshLambertMaterial({color:0x585E6E, side:THREE.DoubleSide});
-    var door2 = new THREE.Mesh(door_geo2, door_mat2);
-    door2.rotation.y = Math.PI/2;
-    door2.position.set(main.position.x + x/2 + 0.025*M, main.position.y, 2*M);
-
-    // Janelas
-    var w_group = new THREE.Group();
-    var w_geo = new THREE.PlaneGeometry(M, 1.75*M, 32);
-    var w_mat = new THREE.MeshLambertMaterial({color:0x354E3A, side:THREE.DoubleSide});
-    var w =  new THREE.Mesh(w_geo, w_mat);
-    w.rotation.y = Math.PI/2;
-
-    w.position.x = main.position.x + x/2 +0.025*M;
-    w.position.y = main.position.y;
-    w.position.z = 12.5*M;
-
-    for (var i = 0; i < 3; i++){
-        w_aux1 = w.clone()
-        w_aux1.position.y = w_aux1.position.y - y/6;
-        w_aux1.position.z = w_aux1.position.z - i*0.2*h;
-        w_group.add(w_aux1);
-
-        w_aux2 = w.clone()
-        w_aux2.position.y = w_aux2.position.y + y/6;
-        w_aux2.position.z = w_aux2.position.z - i*0.2*h;
-        w_group.add(w_aux2)
-    }
-
-    // Agrupar
-    var predio = new THREE.Group();
-    predio.add(main);
-    predio.add(out1_group);
-    predio.add(out2_group);
-    predio.add(door2);
-    predio.add(w_group);
-
-    return predio;
-}
-
-//////////////////////////////////////////////
-function predio3(x = 4*M, y = 4*M, h = 5*M) {
-    // Geometria Principal (Predio)
-    var main_geo = new THREE.BoxGeometry(x, y, h);
-    var main_mat = new THREE.MeshLambertMaterial({color:0x3A5C39, side:THREE.DoubleSide});
-    var main =  new THREE.Mesh(main_geo, main_mat);
-    main.position.x = 1.5*x;
-    main.position.y = -2*y;
-    main.position.z = h/2;
-
-    // Predio Secundario
-    var main_geo1 = new THREE.BoxGeometry(2*x/3, 3*y/5, h);
-    var main_mat1 = new THREE.MeshLambertMaterial({color:0x92B289, side:THREE.DoubleSide});
-    var main1 =  new THREE.Mesh(main_geo1, main_mat1);
-    main1.position.x = main.position.x;
-    main1.position.y = main.position.y - y/2 - 1.5*y/5;
-    main1.position.z = h/2;
-
-    var main_geo2 = new THREE.BoxGeometry(2*x/3, 3*y/5, h);
-    var main_mat2 = new THREE.MeshLambertMaterial({color:0x92B289, side:THREE.DoubleSide});
-    var main2 =  new THREE.Mesh(main_geo2, main_mat2);
-    main2.position.x = main.position.x;
-    main2.position.y = main.position.y + y/2 + 1.5*y/5;
-    main2.position.z = h/2;
-
-    // Topo
-    var top_geo1 = new THREE.BoxGeometry(x + 0.5*M, y + 0.5*M, 0.5*M);
-    var top_mat1 = new THREE.MeshLambertMaterial({color:0xE2E5EC, side:THREE.DoubleSide});
-    var top1 = new THREE.Mesh(top_geo1, top_mat1);
-    top1.position.set(main.position.x, main.position.y, h + 0.25*M);
-
-    // "Sombra"
-    var show_geo1 = new THREE.BoxGeometry(2*M, 3.5*M, 0.5*M);
-    var show_mat1 = new THREE.MeshLambertMaterial({color:0xE2E5EC, side:THREE.DoubleSide});
-    var show1 = new THREE.Mesh(show_geo1, show_mat1);
-    show1.position.set(main.position.x + x/2, main.position.y, 5*h/8);
-
-    // Portas
-    var door_geo1 = new THREE.PlaneGeometry(2.5*M, 1.25*M, 32);
-    var door_mat1 = new THREE.MeshLambertMaterial({color:0xB5B4CB, side:THREE.DoubleSide});
-    var door1 = new THREE.Mesh(door_geo1, door_mat1);
-    door1.rotation.y = Math.PI/2;
-    door1.position.set(main.position.x + x/2 + 0.025*M, main.position.y + y/4, 1.25*M + 0.05*M);
-
-    var door_geo2 = new THREE.PlaneGeometry(2.5*M, 1.25*M, 32);
-    var door_mat2 = new THREE.MeshLambertMaterial({color:0xB5B4CB, side:THREE.DoubleSide});
-    var door2 = new THREE.Mesh(door_geo2, door_mat2);
-    door2.rotation.y = Math.PI/2;
-    door2.position.set(main.position.x + x/2 + 0.025*M, main.position.y - y/4, 1.25*M + 0.05*M);
-
-    // Janelas
-    var w_geo1 = new THREE.PlaneGeometry(2*M, 1.5*M, 32);
-    var w_mat1 = new THREE.MeshLambertMaterial({color:0xB5B4CB, side:THREE.DoubleSide});
-    var w1 = new THREE.Mesh(w_geo1, w_mat1);
-    w1.rotation.y = Math.PI/2;
-    w1.position.set(main1.position.x + x/3 + 0.025*M, main1.position.y, h/2);
-
-    var w_geo2 = new THREE.PlaneGeometry(2*M, 1.5*M, 32);
-    var w_mat2 = new THREE.MeshLambertMaterial({color:0xB5B4CB, side:THREE.DoubleSide});
-    var w2 = new THREE.Mesh(w_geo2, w_mat2);
-    w2.rotation.y = Math.PI/2;
-    w2.position.set(main2.position.x + x/3 + 0.025*M, main2.position.y, h/2);
-
-    // Placa
-    var p_geo = new THREE.PlaneGeometry(M, 3.5*M, 32);
-    var p_mat = new THREE.MeshLambertMaterial({color:0x405A7B, side:THREE.DoubleSide});
-    var p = new THREE.Mesh(p_geo, p_mat);
-    p.rotation.y = Math.PI/2;
-    p.position.set(main.position.x + x/2 + 0.025*M, main.position.y, 5*h/6 + 0.05*M);
-
-    // Agrupar
-    var predio = new THREE.Group();
-    predio.add(main);
-    predio.add(main1);
-    predio.add(main2);
-    predio.add(show1);
-    predio.add(top1);
-    predio.add(door1);
-    predio.add(door2);
-    predio.add(p);
-    predio.add(w1);
-    predio.add(w2);
-
-    return predio;
-}
-
-//////////////////////////////////////////////
-function nuvem(){
-    var sp_group = new THREE.Group();
-
-    r = 3*M;
-    x = 20*M;
-    y = 20*M;
-    z = 30*M;
-
-    var geometry1 = new THREE.OctahedronGeometry( r, 1 );
-    var material1 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
-    var sphere1 = new THREE.Mesh( geometry1, material1 );
-    sphere1.position.set(x, y, z);
-    var geometry2 = new THREE.OctahedronGeometry( r, 1 );
-    var material2 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
-    var sphere2 = new THREE.Mesh( geometry2, material2 );
-    sphere2.position.set(x - 2*M, y + 2*M, z + 2*M);
-    var geometry3 = new THREE.OctahedronGeometry( 4*r/3, 1 );
-    var material3 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
-    var sphere3 = new THREE.Mesh( geometry3, material3 );
-    sphere3.position.set(x + M, y - M, z - M);
-
-    var geometry4 = new THREE.OctahedronGeometry( 2*r/3, 1 );
-    var material4 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
-    var sphere4 = new THREE.Mesh( geometry4, material4 );
-    sphere4.position.set(x + 2*M, y + 2*M, z - 2*M);
-    var geometry5 = new THREE.OctahedronGeometry( 5*r/3, 1 );
-    var material5 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
-    var sphere5 = new THREE.Mesh( geometry5, material5 );
-    sphere5.position.set(x + 4*M, y + 4*M, z);
-    var geometry6 = new THREE.OctahedronGeometry( r, 1 );
-    var material6 = new THREE.MeshBasicMaterial( {color: 0xFCFCFC} );
-    var sphere6 = new THREE.Mesh( geometry6, material6 );
-    sphere6.position.set(x + 3*M, y + M, z - 3*M);
-
-    sp_group.add(sphere1);
-    sp_group.add(sphere2);
-    sp_group.add(sphere3);
-
-    sp_group.add(sphere4);
-    sp_group.add(sphere5);
-    sp_group.add(sphere6);
-
-    return sp_group;
-}
-
-//////////////////////////////////////////////
-function banco(x = 0.5*M, y = 2*M, h = 0.10*M){
-    // Parte Principal
-    var main_geo = new THREE.BoxGeometry(x, y, h);
-    var main_mat = new THREE.MeshLambertMaterial({color:0x3A5C39, side:THREE.DoubleSide});
-    var main =  new THREE.Mesh(main_geo, main_mat);
-    main.position.x = 10*M;
-    main.position.y = 10*M;
-    main.position.z = 0.5*M;
-
-    // Pernas
-    var perna_geo = new THREE.BoxGeometry(0.1*M, 0.1*M, main.position.z);
-    var perna_mat = new THREE.MeshLambertMaterial({color:0x3A5C39, side:THREE.DoubleSide});
-    var perna =  new THREE.Mesh(perna_geo, perna_mat);
-    perna.position.z = main.position.z/2;
-
-    perna_1 = perna.clone();
-    perna_1.position.x = main.position.x + x/2 - 0.05*M;
-    perna_1.position.y = main.position.y + y/2 - 0.05*M;
-
-    perna_2 = perna.clone();
-    perna_2.position.x = main.position.x + x/2 - 0.05*M;
-    perna_2.position.y = main.position.y - y/2 + 0.05*M;
-
-    perna_3 = perna.clone();
-    perna_3.position.x = main.position.x - x/2 + 0.05*M;
-    perna_3.position.y = main.position.y + y/2 - 0.05*M;
-
-    perna_4 = perna.clone();
-    perna_4.position.x = main.position.x - x/2 + 0.05*M;
-    perna_4.position.y = main.position.y - y/2 + 0.05*M;
-
-    var banco = new THREE.Group();
-    banco.add(main)
-    banco.add(perna_1)
-    banco.add(perna_2)
-    banco.add(perna_3)
-    banco.add(perna_4)
-
-    return banco;
-}
-
-//////////////////////////////////////////////
-function hidrante(r1 = 0.15*M, r2 = 0.15*M, h = 0.75*M){
-    // Cilindro Principal
-    var geometry = new THREE.CylinderGeometry( r1, r2, h, 32 );
-    var material = new THREE.MeshBasicMaterial( {color: 0xB22222} );
-    var cylinder = new THREE.Mesh( geometry, material );
-    cylinder.rotation.x = Math.PI/2;
-
-    cylinder.position.x = -10*M;
-    cylinder.position.y = -10*M;
-    cylinder.position.z = h/2;
-
-    // Chapéu
-    var geometry_1 = new THREE.SphereGeometry( r1, 32, 32);
-    var material_1 = new THREE.MeshBasicMaterial( {color: 0xB22222} );
-    var top_1 = new THREE.Mesh( geometry_1, material_1 );
-
-    top_1.position.x = cylinder.position.x;
-    top_1.position.y = cylinder.position.y;
-    top_1.position.z = h;
-
-    // Cilindro Lateral
-    var geometry_2 = new THREE.CylinderGeometry( 4*r1/3, 4*r1/3, 4*r1/3, 32 );
-    var material_2 = new THREE.MeshBasicMaterial( {color: 0xA52A2A} );
-    var hat = new THREE.Mesh( geometry_2, material_2 );
-    hat.rotation.x = Math.PI/2;
-
-    hat.position.x = cylinder.position.x;
-    hat.position.y = cylinder.position.y;
-    hat.position.z = 3*h/4;
-
-    var hidrante = new THREE.Group();
-    hidrante.add(cylinder);
-    hidrante.add(top_1);
-    hidrante.add(hat);
-
-    return hidrante;
-}
-
-//////////////////////////////////////////////
-function carro(color = 0x90B884, x = 1.75*M, y = 3.5*M, h = 1.25*M){
-    // Parte Principal
-    var main_geo = new THREE.BoxGeometry(x, y, h);
-    var main_mat = new THREE.MeshLambertMaterial({color:color, side:THREE.DoubleSide});
-    var main =  new THREE.Mesh(main_geo, main_mat);
-    main.position.x = 8*x;
-    main.position.y = 8*y;
-    main.position.z = h/2 + 0.25*M;
-
-    // Parte Secundaria
-    var main_geo1 = new THREE.BoxGeometry(x, 2*y/3, 2*h/3);
-    var main_mat1 = new THREE.MeshLambertMaterial({color:0xC0C0C0, side:THREE.DoubleSide});
-    var main_1 =  new THREE.Mesh(main_geo1, main_mat1);
-    main_1.position.x = main.position.x;
-    main_1.position.y = main.position.y - y/6;
-    main_1.position.z = 4*h/3 + 0.25*M;
-
-    // Rodas
-    var r_geometry = new THREE.CylinderGeometry( 0.5*M, 0.5*M, 1.80*M, 32 );
-    var r_material = new THREE.MeshBasicMaterial( {color: 0x030303} );
-    var roda = new THREE.Mesh( r_geometry, r_material );
-    roda.rotation.z = Math.PI/2;
-    roda.position.x = main.position.x;
-    roda.position.y = main.position.y + y/2 - 0.5*M - 0.025*M;
-    roda.position.z = M/2;
-
-    var rr_geometry = new THREE.CylinderGeometry( 0.5*M, 0.5*M, 1.80*M, 32 );
-    var rr_material = new THREE.MeshBasicMaterial( {color: 0x030303} );
-    var rroda = new THREE.Mesh( rr_geometry, rr_material );
-    rroda.rotation.z = Math.PI/2;
-    rroda.position.x = main.position.x;
-    rroda.position.y = main.position.y - y/2 + 0.5*M + 0.025*M;
-    rroda.position.z = M/2;
-
-    // Parabrisa
-    var w_geo = new THREE.PlaneGeometry(x, 2*h/3, 32);
-    var w_mat = new THREE.MeshLambertMaterial({color:0x030303, side:THREE.DoubleSide});
-    var w = new THREE.Mesh(w_geo, w_mat);
-    w.rotation.x = Math.PI/2;
-    w.position.set(main_1.position.x, main_1.position.y + y/3 + 0.025*M, 4*h/3 + 0.25*M);
-
-    // Farol
-    var f_geo = new THREE.PlaneGeometry(x/3, h/3, 32);
-    var f_mat = new THREE.MeshLambertMaterial({color:0xDCDCDC, side:THREE.DoubleSide});
-    var f = new THREE.Mesh(f_geo, f_mat);
-    f.rotation.x = Math.PI/2;
-
-    f1 = f.clone();
-    f1.position.set(main.position.x - 0.5*M, main.position.y + y/2 + 0.025*M, h/2 + 0.25*M);
-
-    f2 = f.clone();
-    f2.position.set(main.position.x + 0.5*M, main.position.y + y/2 + 0.025*M, h/2 + 0.25*M);
-
-    var carro = new THREE.Group();
-    carro.add(main);
-    carro.add(main_1);
-    carro.add(roda);
-    carro.add(rroda);
-    carro.add(w);
-    carro.add(f1);
-    carro.add(f2);
-
-    return carro;
-}
+};
