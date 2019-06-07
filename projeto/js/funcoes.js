@@ -398,5 +398,71 @@ function hidrante(r1 = 0.15*M, r2 = 0.15*M, h = 0.75*M){
     hidrante.add(top_1);
     hidrante.add(hat);
 
-    return hidrante
+    return hidrante;
+}
+
+//////////////////////////////////////////////
+function carro(color = 0x90B884, x = 1.75*M, y = 3.5*M, h = 1.25*M){
+    // Parte Principal
+    var main_geo = new THREE.BoxGeometry(x, y, h);
+    var main_mat = new THREE.MeshLambertMaterial({color:color, side:THREE.DoubleSide});
+    var main =  new THREE.Mesh(main_geo, main_mat);
+    main.position.x = 8*x;
+    main.position.y = 8*y;
+    main.position.z = h/2 + 0.25*M;
+
+    // Parte Secundaria
+    var main_geo1 = new THREE.BoxGeometry(x, 2*y/3, 2*h/3);
+    var main_mat1 = new THREE.MeshLambertMaterial({color:0xC0C0C0, side:THREE.DoubleSide});
+    var main_1 =  new THREE.Mesh(main_geo1, main_mat1);
+    main_1.position.x = main.position.x;
+    main_1.position.y = main.position.y - y/6;
+    main_1.position.z = 4*h/3 + 0.25*M;
+
+    // Rodas
+    var r_geometry = new THREE.CylinderGeometry( 0.5*M, 0.5*M, 1.80*M, 32 );
+    var r_material = new THREE.MeshBasicMaterial( {color: 0x030303} );
+    var roda = new THREE.Mesh( r_geometry, r_material );
+    roda.rotation.z = Math.PI/2;
+    roda.position.x = main.position.x;
+    roda.position.y = main.position.y + y/2 - 0.5*M - 0.025*M;
+    roda.position.z = M/2;
+
+    var rr_geometry = new THREE.CylinderGeometry( 0.5*M, 0.5*M, 1.80*M, 32 );
+    var rr_material = new THREE.MeshBasicMaterial( {color: 0x030303} );
+    var rroda = new THREE.Mesh( rr_geometry, rr_material );
+    rroda.rotation.z = Math.PI/2;
+    rroda.position.x = main.position.x;
+    rroda.position.y = main.position.y - y/2 + 0.5*M + 0.025*M;
+    rroda.position.z = M/2;
+
+    // Parabrisa
+    var w_geo = new THREE.PlaneGeometry(x, 2*h/3, 32);
+    var w_mat = new THREE.MeshLambertMaterial({color:0x030303, side:THREE.DoubleSide});
+    var w = new THREE.Mesh(w_geo, w_mat);
+    w.rotation.x = Math.PI/2;
+    w.position.set(main_1.position.x, main_1.position.y + y/3 + 0.025*M, 4*h/3 + 0.25*M);
+
+    // Farol
+    var f_geo = new THREE.PlaneGeometry(x/3, h/3, 32);
+    var f_mat = new THREE.MeshLambertMaterial({color:0xDCDCDC, side:THREE.DoubleSide});
+    var f = new THREE.Mesh(f_geo, f_mat);
+    f.rotation.x = Math.PI/2;
+
+    f1 = f.clone();
+    f1.position.set(main.position.x - 0.5*M, main.position.y + y/2 + 0.025*M, h/2 + 0.25*M);
+
+    f2 = f.clone();
+    f2.position.set(main.position.x + 0.5*M, main.position.y + y/2 + 0.025*M, h/2 + 0.25*M);
+
+    var carro = new THREE.Group();
+    carro.add(main);
+    carro.add(main_1);
+    carro.add(roda);
+    carro.add(rroda);
+    carro.add(w);
+    carro.add(f1);
+    carro.add(f2);
+
+    return carro;
 }
